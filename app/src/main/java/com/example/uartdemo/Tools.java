@@ -1,5 +1,11 @@
 package com.example.uartdemo;
 
+import android.util.Log;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * Tools byte
  */
@@ -77,6 +83,77 @@ public class Tools {
 		}
 
 		return (byte) (sum % 256);
+	}
+
+
+
+	/**
+	 * 获取时间字符串
+	 *
+	 * @return 返回字符串格式 yyyyMMddHHmmss
+	 */
+	public static String getStringDateTime(Date date) {
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+		return formatter.format(date);
+	}
+
+
+	/**
+	 * 获取时间字符串
+	 *
+	 * @return 返回字符串格式 HHmmss
+	 */
+	public static String getStringTime(Date date) {
+		SimpleDateFormat formatter = new SimpleDateFormat("HHmmss");
+		return formatter.format(date);
+	}
+
+	/**
+	 * 获取时间字符串
+	 *
+	 * @return 返回字符串格式 HHmmss
+	 */
+	public static String getStringDate(Date date) {
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+		return formatter.format(date);
+	}
+
+
+	public static Date getDateByString(String dateStr){
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+		try {
+			return formatter.parse(dateStr);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public static Date getDateTimeByString(String dateStr){
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+		try {
+			return formatter.parse(dateStr);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public static Date getTimeByString(String dateStr){
+		SimpleDateFormat formatter = new SimpleDateFormat("HHmmss");
+		try {
+			return formatter.parse(dateStr);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	// 测试
+	public static void main(String[] args) {
+		Date date = getTimeByString("235959");
+
+		Log.i("test", "main: " + date.toString());
 	}
 
 }

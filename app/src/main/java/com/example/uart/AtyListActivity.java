@@ -105,9 +105,9 @@ public class AtyListActivity extends Activity{
                         }
 
                         if(noRelayRadioButton.isChecked()) {
-                            Const.rf_transmisson_type = Const.RF_TRANSMISSON_TYPE.RF_TRANSMISSON_TYPE_NO_RELAY;
+                            Const.rf_transmission_type = Const.RF_TRANSMISSION_TYPE.RF_TRANSMISSION_TYPE_NO_RELAY;
                         }else{
-                            Const.rf_transmisson_type = Const.RF_TRANSMISSON_TYPE.RF_TRANSMISSON_TYPE_RELAY;
+                            Const.rf_transmission_type = Const.RF_TRANSMISSION_TYPE.RF_TRANSMISSION_TYPE_RELAY;
                             try{
                                 Const.rf_relay_id = Long.parseLong(relayIdEditText.getText().toString(),16);
                             }catch (Exception ex){

@@ -1,23 +1,9 @@
 package com.example.uart;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-
-import com.example.parse.Cmd;
-import com.example.parse.Const;
-import com.example.uartdemo.SerialPort;
-import com.example.uartdemo.Tools;
-
-import android.os.Bundle;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -33,6 +19,20 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.Spinner;
+
+import com.example.parse.Cmd;
+import com.example.parse.Const;
+import com.example.uartdemo.SerialPort;
+import com.example.uartdemo.Tools;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
 public class MainActivity extends Activity implements OnClickListener {
 
@@ -69,8 +69,8 @@ public class MainActivity extends Activity implements OnClickListener {
 	private OutputStream os;
 
 	private int port = 13;
-	private int buad = 57600;
-//	private int buad = 9600;
+	private int baud = 57600;
+//	private int baud = 9600;
 	private String powerStr = "rfid power";
 
 	/**
@@ -143,8 +143,8 @@ public class MainActivity extends Activity implements OnClickListener {
 //		serialportStrs = context.getResources().getStringArray(R.array.serialportArray);
 //		powerStrs = context.getResources().getStringArray(R.array.powerArray);
 
-//		for(String buad:buadrateStrs){
-//			listBuadRate.add(buad);
+//		for(String baud:buadrateStrs){
+//			listBuadRate.add(baud);
 //		}
 //		for(String serial:serialportStrs){
 //			listSerialPort.add(serial);
@@ -199,7 +199,7 @@ public class MainActivity extends Activity implements OnClickListener {
 //			public void onItemSelected(AdapterView<?> adapter, View view,
 //					int position, long id) {
 //				String buadrate = buadrateStrs[position];
-//				buad = Integer.valueOf(buadrate);
+//				baud = Integer.valueOf(buadrate);
 //			}
 //
 //			@Override
@@ -356,7 +356,7 @@ public class MainActivity extends Activity implements OnClickListener {
 	private void open() {
 		//open
 		try {
-			mSerialPort = new SerialPort(port, buad, 0);
+			mSerialPort = new SerialPort(port, baud, 0);
 		} catch (Exception e) {
 
 //			Toast.makeText(this, "SerialPort init fail!!", 0).show();

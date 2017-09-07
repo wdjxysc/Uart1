@@ -185,15 +185,15 @@ public class Const {
      * 传输模式
      * 有中继与无中继的模式 数据格式不同
      */
-    public enum RF_TRANSMISSON_TYPE{
-        RF_TRANSMISSON_TYPE_RELAY,
-        RF_TRANSMISSON_TYPE_NO_RELAY
+    public enum RF_TRANSMISSION_TYPE {
+        RF_TRANSMISSION_TYPE_RELAY,
+        RF_TRANSMISSION_TYPE_NO_RELAY
     }
 
     /**
      * 当前模块传输模式 默认无中继模式
      */
-    public static RF_TRANSMISSON_TYPE rf_transmisson_type = RF_TRANSMISSON_TYPE.RF_TRANSMISSON_TYPE_NO_RELAY;
+    public static RF_TRANSMISSION_TYPE rf_transmission_type = RF_TRANSMISSION_TYPE.RF_TRANSMISSION_TYPE_NO_RELAY;
 
 
     /**

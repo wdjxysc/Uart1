@@ -636,11 +636,11 @@ public class Main2Activity extends Activity implements View.OnClickListener {
 
                     //去掉数据头获取数据主体部分
                     int rf_relay_id_length = 0;
-                    switch (Const.rf_transmisson_type) {
-                        case RF_TRANSMISSON_TYPE_NO_RELAY:
+                    switch (Const.rf_transmission_type) {
+                        case RF_TRANSMISSION_TYPE_NO_RELAY:
                             rf_relay_id_length = 0;
                             break;
-                        case RF_TRANSMISSON_TYPE_RELAY:
+                        case RF_TRANSMISSION_TYPE_RELAY:
                             rf_relay_id_length = Const.RF_RELAY_ID_LENGTH;
                             break;
                     }

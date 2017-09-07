@@ -1,6 +1,5 @@
 package com.example.uartdemo;
 
-import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 
 import com.example.parse.Const;
@@ -106,7 +105,51 @@ public class SerialPortTool {
         }
     }
 
+    /**
+     * 通过串口发送数据  同步
+     * @param senddata
+     * @param timeout
+     * @return
+     * @throws IOException
+     */
+    public byte[] sendAndRevDataComm(byte[] senddata,int timeout) throws IOException, InterruptedException {
+        if(!isOpen) return null;
 
+        byte[] revdata = null;
+        byte[] buffer1 = new byte[inputStream.available()];
+        int readed1 = inputStream.read(buffer1);
+        outputStream.write(senddata);
+
+        Log.i("wdj", "send:" + Tools.Bytes2HexString(senddata, senddata.length));
+        //RF射频模块可能回应比较慢
+        for (int i = 0; i < timeout/500; i++) {
+            Thread.sleep(500);
+            if (inputStream.available() >= 5) {
+                byte[] buffer = new byte[inputStream.available()];
+                int readed = inputStream.read(buffer);
+                revdata = buffer;
+                break;
+            }
+        }
+
+        if(revdata!=null) {
+            Log.i("wdj", "rev:" + Tools.Bytes2HexString(revdata, revdata.length));
+        }else {
+            Log.i("wdj", "rev:null");
+        }
+
+        return revdata;
+    }
+
+    /**
+     * 通过RF模块以无线模式发送数据  同步
+     * @param senddata
+     * @param timeout
+     * @param rfModuleType
+     * @return
+     * @throws IOException
+     * @throws InterruptedException
+     */
     public byte[] sendAndRevData(byte[] senddata,int timeout,Const.RfModuleType rfModuleType) throws IOException, InterruptedException{
         byte[] revdata = null;
 
@@ -135,11 +178,11 @@ public class SerialPortTool {
      * @throws InterruptedException
      */
     public byte[] sendAndRevData(byte[] senddata,int timeout) throws IOException, InterruptedException {
-        switch (Const.rf_transmisson_type){
-            case RF_TRANSMISSON_TYPE_NO_RELAY:
+        switch (Const.rf_transmission_type){
+            case RF_TRANSMISSION_TYPE_NO_RELAY:
                 timeout = 15000;
                 break;
-            case RF_TRANSMISSON_TYPE_RELAY:
+            case RF_TRANSMISSION_TYPE_RELAY:
                 timeout = 26000;  //skyshoot 有中继模式 传输时间比较长 设置为26s
                 break;
         }

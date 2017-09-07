@@ -170,11 +170,11 @@ public class SetPriceActivity extends Activity implements View.OnClickListener {
             @Override
             public void run() {
                 try {
-                    switch (Const.rf_transmisson_type){
-                        case RF_TRANSMISSON_TYPE_NO_RELAY:
+                    switch (Const.rf_transmission_type){
+                        case RF_TRANSMISSION_TYPE_NO_RELAY:
                             timeout = 15000;
                             break;
-                        case RF_TRANSMISSON_TYPE_RELAY:
+                        case RF_TRANSMISSION_TYPE_RELAY:
                             timeout = 26000;
                             break;
                     }

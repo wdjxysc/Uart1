@@ -68,6 +68,20 @@ public class CRC16 {
         return ((ucCRCHi & 0x00ff) << 8) | (ucCRCLo & 0x00ff) & 0xffff;
     }
 
+
+
+    /// <summary>
+    /// 判断数组是否满足crc校验
+    /// </summary>
+    /// <param name="data"></param>
+    /// <returns></returns>
+    public static boolean crc16Pass(byte[] data)
+    {
+        int crc = calcCrc16(data,0, data.length - 2);
+        if (crc%256 == (data[data.length - 2]&0xff) && crc/256== (data[data.length - 1]&0xff)) return true;
+        return false;
+    }
+
     // 测试
     public static void main(String[] args) {
         // 0x02 05 00 03 FF 00 , crc16=7C 09

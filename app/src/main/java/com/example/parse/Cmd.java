@@ -50,12 +50,12 @@ public class Cmd {
 //        String front = "FF078D9810" + String.format("%08d", nodeid) + "FEFEFE";
         String headbytestr = "AA";
         String rf_relay_id = "";
-        switch (Const.rf_transmisson_type) {
-            case RF_TRANSMISSON_TYPE_RELAY:
+        switch (Const.rf_transmission_type) {
+            case RF_TRANSMISSION_TYPE_RELAY:
                 headbytestr = "55";
                 rf_relay_id = String.format("%06X", Const.rf_relay_id);
                 break;
-            case RF_TRANSMISSON_TYPE_NO_RELAY:
+            case RF_TRANSMISSION_TYPE_NO_RELAY:
                 headbytestr = "AA";
                 rf_relay_id = "";
                 break;
