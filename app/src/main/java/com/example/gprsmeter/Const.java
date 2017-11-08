@@ -56,6 +56,8 @@ public class Const {
     public final static int CMD_ID_CTS_METER_UPLOAD_PIC = 3101;//摄像直读表采集图片信息下主动上报
 
     /*以下命令主要用于串口设置*/
+    public final static int CMD_ID_STC_GET_RSSI = 2010;//获取RSSI
+    public final static int CMD_ID_STC_GET_ICCID = 2012;//获取ICCID
     public final static int CMD_ID_STC_SET_TIME = 2015;//物联网表时钟设置
     public final static int CMD_ID_STC_SET_DATA = 2016;//物联网表底数设置
     public final static int CMD_ID_STC_SET_METER_ID = 2018;//物联网表地址设置

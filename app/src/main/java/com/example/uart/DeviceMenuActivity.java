@@ -178,11 +178,6 @@ public class DeviceMenuActivity extends Activity {
                 });
             }
 
-            public TextView getTextView() {
-                return textView;
-            }
-
-
             public void setView(ItemMenu itemMenu){
                 textView.setText(itemMenu.title);
                 imageView.setImageResource(itemMenu.imgResId);

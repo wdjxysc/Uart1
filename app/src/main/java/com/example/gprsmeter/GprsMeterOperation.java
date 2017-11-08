@@ -639,4 +639,34 @@ public class GprsMeterOperation {
 
         return dic;
     }
+
+
+    /// <summary>
+    /// 获取表信号
+    /// </summary>
+    /// <param name="meterId"></param>
+    /// <returns></returns>
+    public HashMap<String, Object> readMeterRssi(String meterId)
+    {
+        HashMap<String,Object> dic = new HashMap<String, Object>();
+
+        HashMap<String,Object> param = new HashMap<String, Object>();
+        param.put(Cmd.KEY_METER_ID, meterId);
+        param.put(Cmd.KEY_CMD_ID, Const.CMD_ID_STC_GET_RSSI);
+        param.put(Cmd.KEY_MESSAGE_ID, 0);
+        byte[] sendData = Cmd.AssembleCmd(param);
+
+        byte[] recvData = new byte[0];
+        try {
+            recvData = serialPortTool.sendAndRevDataComm(sendData, 60*1000);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        dic = Cmd.ParseData(recvData);
+
+        return dic;
+    }
 }

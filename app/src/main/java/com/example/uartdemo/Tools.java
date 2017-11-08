@@ -149,6 +149,41 @@ public class Tools {
 		return null;
 	}
 
+	/// <summary>
+	/// 合并数组
+	/// </summary>
+	/// <param name="First">第一个数组</param>
+	/// <param name="Second">第二个数组</param>
+	/// <returns>合并后的数组(第一个数组+第二个数组，长度为两个数组的长度)</returns>
+	public static byte[] MergerArray(byte[] first, byte[] second)
+	{
+		byte[] result = new byte[first.length + second.length];
+		System.arraycopy(first,0,result,0,first.length);
+		System.arraycopy(second,0,result,first.length,second.length);
+		return result;
+	}
+
+
+	/// <summary>
+	/// 过滤指定字节之前的数据
+	/// </summary>
+	/// <param name="data"></param>
+	/// <param name="flag"></param>
+	/// <returns></returns>
+	public static byte[] FilterFront(byte[] data, byte flag)
+	{
+		for (int i = 0; i < data.length; i++)
+		{
+			if (data[i] == flag)
+			{
+				byte[] result = new byte[data.length - i];
+				System.arraycopy(data, i, result, 0, result.length);
+				return result;
+			}
+		}
+		return new byte[0];
+	}
+
 	// 测试
 	public static void main(String[] args) {
 		Date date = getTimeByString("235959");

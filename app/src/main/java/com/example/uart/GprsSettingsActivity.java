@@ -1,15 +1,19 @@
 package com.example.uart;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -89,7 +93,14 @@ public class GprsSettingsActivity extends Activity {
     Button setMeterEnableButton;
     @BindView(R.id.oneKeySetButton)
     Button oneKeySetButton;
-
+    @BindView(R.id.flowReadButton)
+    Button flowReadButton;
+    @BindView(R.id.meterIdReadButton)
+    Button meterIdReadButton;
+    @BindView(R.id.readMeterRssiButton)
+    Button readMeterRssiButton;
+    @BindView(R.id.rssiTextView)
+    TextView rssiTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,6 +112,9 @@ public class GprsSettingsActivity extends Activity {
         gprsMeterOperation = new GprsMeterOperation();
 
         initView();
+
+//        test();
+
     }
 
     private void initView() {
@@ -123,7 +137,6 @@ public class GprsSettingsActivity extends Activity {
 
         updateTimeInView(new Date());
 
-
     }
 
     private void updateTimeInView(Date date){
@@ -139,7 +152,7 @@ public class GprsSettingsActivity extends Activity {
             R.id.monthRadioButton, R.id.uploadCircleSetButton, R.id.awakeTimeTextView,
             R.id.awakeUploadTimeSetButton, R.id.flowSetButton, R.id.frequencySetButton,
             R.id.freezeDayButton, R.id.setMeterEnableButton, R.id.timeSetButton,
-            R.id.oneKeySetButton})
+            R.id.oneKeySetButton, R.id.flowReadButton, R.id.meterIdReadButton, R.id.readMeterRssiButton})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.meterIdSetButton:
@@ -190,6 +203,15 @@ public class GprsSettingsActivity extends Activity {
             case R.id.oneKeySetButton:
                 oneKeySet();
                 break;
+            case R.id.flowReadButton:
+                readMeterData();
+                break;
+            case R.id.meterIdReadButton:
+                readMeterId();
+                break;
+            case R.id.readMeterRssiButton:
+                readMeterRssi();
+                break;
         }
     }
 
@@ -237,15 +259,21 @@ public class GprsSettingsActivity extends Activity {
 
     private void setTime() {
         String meterId = meterIdEditText.getText().toString();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date date = null;
-        try {
-            date = simpleDateFormat.parse(dateTextView.getText().toString() + " " + timeTextView.getText().toString());
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        final Date date = new Date();
 
-        if (date == null) return;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                updateTimeInView(date);
+            }
+        });
+
+//        try {
+//            date = simpleDateFormat.parse(dateTextView.getText().toString() + " " + timeTextView.getText().toString());
+//        } catch (ParseException e) {
+//            e.printStackTrace();
+//        }
+
         HashMap<String, Object> result = gprsMeterOperation.writeTime(meterId, date);
 
         showResult(result);
@@ -359,6 +387,45 @@ public class GprsSettingsActivity extends Activity {
         showResult(result);
     }
 
+    private void readMeterId() {
+        String meterId = meterIdEditText.getText().toString();
+
+        final HashMap<String, Object> result = gprsMeterOperation.readMeterData(Const.METER_ID_AAAAAAAAAAAAAA);
+
+        if (result != null && result.containsKey(Cmd.KEY_BACK_CODE)) {
+            String logStr = "";
+            logStr += "-读表ID-";
+            logStr += result.get(Cmd.KEY_METER_ID).toString();
+            meterIdEditText.setText(result.get(Cmd.KEY_METER_ID).toString());
+
+            Toast.makeText(this, logStr, Toast.LENGTH_SHORT).show();
+
+        } else {
+            Toast.makeText(this, "失败-超时", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void readMeterRssi() {
+
+        final String meterId = meterIdEditText.getText().toString();
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                rssiTextView.setText("正在获取信号强度,超时时间60s");
+            }
+        });
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                HashMap<String, Object> result = gprsMeterOperation.readMeterRssi(meterId);
+
+                showResult(result);
+            }
+        }).start();
+    }
+
     /**
      * 重燃一键设置  写ID  写时钟   抄表   读ICCID(掌机上不用记录，省去该步骤)   出厂启用
      */
@@ -370,6 +437,7 @@ public class GprsSettingsActivity extends Activity {
                 setTime();
                 readMeterData();
                 setMeterEnable();
+                readMeterRssi();
             }
         }).start();
     }
@@ -412,6 +480,16 @@ public class GprsSettingsActivity extends Activity {
                 case Const.CMD_ID_STC_SET_METER_FREEZE_DAY:
                     logStr += "-设置冻结日";
                     break;
+                case Const.CMD_ID_STC_GET_RSSI:
+                    logStr += "-获取信号强度";
+                    logStr += result.get(Cmd.KEY_METER_RSSI).toString();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            rssiTextView.setText(result.get(Cmd.KEY_METER_RSSI).toString());
+                        }
+                    });
+                    break;
             }
 
             if (result.get(Cmd.KEY_BACK_CODE).equals(Const.BACK_CODE_SUCCESS)) {
@@ -419,6 +497,12 @@ public class GprsSettingsActivity extends Activity {
                 str += "成功" + logStr;
             } else {
                 str += "失败" + result.get(Cmd.KEY_BACK_CODE);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        rssiTextView.setText("失败");
+                    }
+                });
             }
 
             final String finalStr = str;
@@ -434,8 +518,28 @@ public class GprsSettingsActivity extends Activity {
                 @Override
                 public void run() {
                     Toast.makeText(context, "失败-超时", Toast.LENGTH_SHORT).show();
+                    rssiTextView.setText("失败");
                 }
             });
         }
+    }
+
+    private void test(){
+
+        SharedPreferences sharedPreferences = this.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putFloat("Age", 16);
+        editor.apply();
+
+        Float age = sharedPreferences.getFloat("Age", 0);
+
+        LayoutInflater layoutInflater = LayoutInflater.from(this);
+        LinearLayout v = (LinearLayout) layoutInflater.inflate(R.layout.menu_header,null);
+        v.addView((View) v);
+
+        View dialogView = View.inflate(this,R.layout.item_aty,null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this).setTitle("标题").setView(dialogView).setNegativeButton("取消",null).setPositiveButton("确定",null);
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 }

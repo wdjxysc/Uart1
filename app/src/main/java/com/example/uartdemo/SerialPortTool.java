@@ -121,15 +121,41 @@ public class SerialPortTool {
         outputStream.write(senddata);
 
         Log.i("wdj", "send:" + Tools.Bytes2HexString(senddata, senddata.length));
+        byte[] resultBytes = new byte[0];
         //RF射频模块可能回应比较慢
         for (int i = 0; i < timeout/500; i++) {
             Thread.sleep(500);
-            if (inputStream.available() >= 5) {
-                byte[] buffer = new byte[inputStream.available()];
-                int readed = inputStream.read(buffer);
-                revdata = buffer;
-                break;
+//            if (inputStream.available() >= 5) {
+//                byte[] buffer = new byte[inputStream.available()];
+//                int readed = inputStream.read(buffer);
+//                revdata = buffer;
+//                break;
+//            }
+
+            int available = inputStream.available();
+            if (available == 0) continue;
+
+            byte[] buffer = new byte[available];
+            int length = inputStream.read(buffer, 0, available);
+            if (length != 0) {
+                resultBytes = Tools.MergerArray(resultBytes, buffer);
             }
+
+            resultBytes = Tools.FilterFront(resultBytes, (byte) 0x68);
+
+            if (resultBytes.length < 9) {
+                continue;
+            }
+            if (resultBytes.length < (resultBytes[1] & 0xff) + (resultBytes[2] & 0xff) * 0x100) {
+                continue;
+            }
+
+
+            byte[] usefulData = new byte[resultBytes[1] + resultBytes[2] * 0x100];
+            System.arraycopy(resultBytes, 0, usefulData, 0, usefulData.length);
+            revdata = usefulData;
+            break;
+
         }
 
         if(revdata!=null) {

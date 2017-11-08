@@ -24,8 +24,10 @@ import static com.example.gprsmeter.Const.CMD_ID_CTS_UPLOAD_METER_RECORD_INFO;
 import static com.example.gprsmeter.Const.CMD_ID_STC_CLS_VALVE;
 import static com.example.gprsmeter.Const.CMD_ID_STC_EXCEPTION_CLEAR;
 import static com.example.gprsmeter.Const.CMD_ID_STC_GET_HEARTBEAT_CYCLE;
+import static com.example.gprsmeter.Const.CMD_ID_STC_GET_ICCID;
 import static com.example.gprsmeter.Const.CMD_ID_STC_GET_METER_FREEZE_DAY;
 import static com.example.gprsmeter.Const.CMD_ID_STC_GET_METER_RECORD_FREQUENCY;
+import static com.example.gprsmeter.Const.CMD_ID_STC_GET_RSSI;
 import static com.example.gprsmeter.Const.CMD_ID_STC_GET_SERVER_IP;
 import static com.example.gprsmeter.Const.CMD_ID_STC_GET_TIME;
 import static com.example.gprsmeter.Const.CMD_ID_STC_GET_UPLOAD_CYCLE;
@@ -196,6 +198,12 @@ public class Cmd {
                 dataStr = meterId;
                 break;
             case CMD_ID_STC_OPN_VALVE:
+                dataStr = meterId;
+                break;
+            case CMD_ID_STC_GET_ICCID:
+                dataStr = meterId;
+                break;
+            case CMD_ID_STC_GET_RSSI:
                 dataStr = meterId;
                 break;
             case CMD_ID_CTS_EXCEPTION_UPLOAD:
@@ -675,7 +683,7 @@ public class Cmd {
 
                             byte[] rssiBytes1 = new byte[1];
                             System.arraycopy(data, pos, rssiBytes1, 0, rssiBytes1.length);
-                            map.put(KEY_METER_RSSI, rssiBytes1[0]);
+                            map.put(KEY_METER_RSSI, Integer.parseInt(Tools.Bytes2HexString(rssiBytes1,rssiBytes1.length)));
                             pos++;
 
                             byte[] batteryVoltageBytes = new byte[2];
@@ -710,7 +718,7 @@ public class Cmd {
 
                             byte[] rssiBytes2 = new byte[1];
                             System.arraycopy(data, pos, rssiBytes2, 0, rssiBytes2.length);
-                            map.put(KEY_METER_RSSI, rssiBytes2[0]);
+                            map.put(KEY_METER_RSSI, Integer.parseInt(Tools.Bytes2HexString(rssiBytes2,rssiBytes2.length)));
                             pos += rssiBytes2.length;
 
                             byte[] powerType = new byte[1];
@@ -873,6 +881,41 @@ public class Cmd {
                             System.arraycopy(data, 25, meterId, 0, meterId.length);
                             map.put(KEY_METER_ID, Tools.Bytes2HexString(meterId,meterId.length));
                             break;
+                        case CMD_ID_STC_GET_ICCID:
+                            pos = 23;
+                            System.arraycopy(data, pos, backCode, 0, backCode.length);
+                            map.put(KEY_BACK_CODE, Integer.parseInt(Tools.Bytes2HexString(backCode,backCode.length)));
+                            pos += backCode.length;
+
+                            System.arraycopy(data, pos, meterId, 0, meterId.length);
+                            map.put(KEY_METER_ID, Tools.Bytes2HexString(meterId, meterId.length));
+                            pos += meterId.length;
+
+                            byte[] simtype = new byte[1];
+                            System.arraycopy(data, pos, simtype, 0, simtype.length);
+                            map.put(KEY_SIM_CARD_TYPE, simtype[0]);
+                            pos += simtype.length;
+
+                            byte[] iccid = new byte[10];
+                            System.arraycopy(data, pos, iccid, 0, iccid.length);
+                            map.put(KEY_ICCID, Tools.Bytes2HexString(iccid, iccid.length));
+                            break;
+                        case CMD_ID_STC_GET_RSSI:
+                            pos = 23;
+                            System.arraycopy(data, pos, backCode, 0, backCode.length);
+                            map.put(KEY_BACK_CODE, Integer.parseInt(Tools.Bytes2HexString(backCode,backCode.length)));
+                            pos += backCode.length;
+
+                            System.arraycopy(data, pos, meterId, 0, meterId.length);
+                            map.put(KEY_METER_ID, Tools.Bytes2HexString(meterId,meterId.length));
+                            pos += meterId.length;
+
+                            byte[] rssiBytes = new byte[1];
+                            System.arraycopy(data, pos, rssiBytes, 0, rssiBytes.length);
+                            pos += rssiBytes.length;
+                            map.put(KEY_METER_RSSI, Integer.parseInt(Tools.Bytes2HexString(rssiBytes,rssiBytes.length)));
+
+                            break;
                     }
                 }
                 catch (Exception ex)
@@ -909,9 +952,11 @@ public class Cmd {
     {
             /*--2byte小数--/--4byte整数--*/  /*HEX*/ /*三位小数*/
 
-        int flowTotal = (int) (flow*1000);
-        int flowInt = flowTotal/1000;
-        int flowDec = flowTotal%1000;
+        String flowStr = Float.toString(flow);
+        String[] strings = flowStr.split("\\.");
+
+        int flowInt = Integer.parseInt(strings[0]);
+        int flowDec = Integer.parseInt(strings[1]);
 
         String str = Tools.Bytes2HexString(Tools.intToByte(flowDec), Tools.intToByte(flowDec).length).substring(0, 4) + Tools.Bytes2HexString(Tools.intToByte(flowInt),Tools.intToByte(flowInt).length);
         byte[] result = Tools.HexString2Bytes(str);
